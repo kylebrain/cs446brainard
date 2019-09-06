@@ -1,4 +1,5 @@
 #include "ConfigFile.h"
+#include "Utils.h"
 #include <string.h>
 
 ConfigFile::ConfigFile() :
@@ -21,14 +22,13 @@ ConfigFile::ConfigFile(string fileName) : ConfigFile()
 
 void ConfigFile::parseConfileFile(string fileName)
 {
-    std::cout << "Creating ConfigFile..." << std::endl;
     std::ifstream configFile(fileName);
     if (!configFile)
     {
-        throw std::invalid_argument("Could not open specified config file name! Was it mispelled?");
+        throw std::invalid_argument("Could not open specified config file name \"" + fileName +"\"! Was it mispelled?");
     }
 
-    RemoveHeader("Start Simulator Configuration File", configFile);
+    Utils::RemoveHeader("Start Simulator Configuration File", configFile);
     version = GetConfigAttribute("Version/Phase", configFile);
     filePath = GetConfigAttribute("File Path", configFile);
     projectorCycleTime = std::stoi(GetConfigAttribute("Projector cycle time {msec}", configFile));
@@ -39,12 +39,14 @@ void ConfigFile::parseConfileFile(string fileName)
     hardDriveCycleTime = std::stoi(GetConfigAttribute("Hard drive cycle time {msec}", configFile));
     logType = GetLogTypeFromString(GetConfigAttribute("Log", configFile));
     logFilePath = GetConfigAttribute("Log File Path", configFile);
-    RemoveHeader("End Simulator Configuration File", configFile);
+    Utils::RemoveHeader("End Simulator Configuration File", configFile);
 
     if(!configFile.eof())
     {
         throw std::runtime_error("Config file was successfully processed, but there is extra information");
     }
+
+    configFile.close();
 
 
 }
@@ -62,16 +64,6 @@ string ConfigFile::GetConfigAttribute(string attrHeader, std::ifstream & file)
     string retValue(cStringRet);
     return retValue;
 
-}
-
-void ConfigFile::RemoveHeader(string header, std::ifstream & file)
-{
-    string line;
-    std::getline(file, line);
-    if(line != header)
-    {
-        throw std::runtime_error("Config file header did not match: \"" + header + "\"");
-    }
 }
 
 LogType ConfigFile::GetLogTypeFromString(string logTypeStr)

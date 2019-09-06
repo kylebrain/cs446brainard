@@ -1,7 +1,9 @@
 #include <iostream>
 #include <exception>
+#include <string>
 
 #include "ConfigFile.h"
+#include "MetaData.h"
 
 int main(int argc, char * argv[])
 {
@@ -13,8 +15,11 @@ int main(int argc, char * argv[])
 
     try
     {
+        std::cout << "Creating ConfigFile..." << std::endl;
         ConfigFile configFile(argv[1]);
         std::cout << configFile << std::endl;
+        std::cout << "Creating Metadata..." << std::endl;
+        MetaData metaData(configFile.filePath);
     } catch (const std::exception & e)
     {
         std::cerr << e.what() << std::endl;

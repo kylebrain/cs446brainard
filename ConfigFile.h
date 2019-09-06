@@ -9,12 +9,12 @@
 
 using std::string;
 
-enum LogType {BOTH, MONITOR, LOGFILE};
+enum LogType {BOTH, LOG_MONITOR, LOGFILE};
 const string LOG_TYPE_HEADER = "Log to ";
 const std::map<string, LogType> LOG_TYPE_STRING_MAP =
 {
     {LOG_TYPE_HEADER + "Both", BOTH},
-    {LOG_TYPE_HEADER + "Monitor", MONITOR},
+    {LOG_TYPE_HEADER + "Monitor", LOG_MONITOR},
     {LOG_TYPE_HEADER + "Log file", LOGFILE}
 };
 
@@ -38,7 +38,6 @@ class ConfigFile
     private:
         void parseConfileFile(string fileName);
         string GetConfigAttribute(string attrHeader, std::ifstream & file);
-        void RemoveHeader(string header, std::ifstream & file);
         LogType GetLogTypeFromString(string logTypeStr);
 
 };
