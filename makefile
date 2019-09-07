@@ -1,17 +1,23 @@
-all: main.cpp ConfigFile.o MetaData.o Utils.o Logger.o
-	g++ -g main.cpp ConfigFile.o MetaData.o Utils.o Logger.o -o main
+EXE = sim.exe
 
-ConfigFile.o: ConfigFile.cpp ConfigFile.h
-	g++ -c ConfigFile.cpp
+SRC_DIR = src
+OBJ_DIR = obj
 
-MetaData.o: MetaData.cpp MetaData.h
-	g++ -c MetaData.cpp
+SRC = $(wildcard $(SRC_DIR)/*.cpp)
+OBJ = $(SRC:$(SRC_DIR)/%.cpp=$(OBJ_DIR)/%.o)
 
-Utils.o: Utils.cpp Utils.h
-	g++ -c Utils.cpp
+CPPFLAGS += -Iinc
 
-Logger.o: Logger.cpp Logger.h
-	g++ -c Logger.cpp
+.PHONY: all clean
+
+all: $(EXE)
+
+$(EXE): $(OBJ)
+	g++ $^ -o $@
+
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp
+	@mkdir -p $(OBJ_DIR)
+	g++ $(CPPFLAGS) -c $< -o $@
 
 clean:
-	rm *.o main
+	$(RM) -rf $(OBJ_DIR) $(EXE)
