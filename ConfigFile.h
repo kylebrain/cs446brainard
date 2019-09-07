@@ -7,9 +7,10 @@
 #include <iostream>
 #include <map>
 
+#include "Logger.h"
+
 using std::string;
 
-enum LogType {BOTH, LOG_MONITOR, LOGFILE};
 const string LOG_TYPE_HEADER = "Log to ";
 const std::map<string, LogType> LOG_TYPE_STRING_MAP =
 {

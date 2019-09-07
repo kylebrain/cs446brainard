@@ -4,6 +4,7 @@
 
 #include "ConfigFile.h"
 #include "MetaData.h"
+#include "Logger.h"
 
 int main(int argc, char * argv[])
 {
@@ -17,9 +18,19 @@ int main(int argc, char * argv[])
     {
         std::cout << "Creating ConfigFile..." << std::endl;
         ConfigFile configFile(argv[1]);
-        std::cout << configFile << std::endl;
-        std::cout << "Creating Metadata..." << std::endl;
-        MetaData metaData(configFile.filePath);
+        Logger logger(configFile.logFilePath, configFile.logType);
+
+        try
+        {
+            logger << "Creating Metadata..." << std::endl;
+            MetaData metaData(configFile.filePath);
+        } catch (const std::exception & e)
+        {
+            logger << e.what() << std::endl;
+            logger << "Simulation failed" << std::endl;
+            return -1;
+        }
+        
     } catch (const std::exception & e)
     {
         std::cerr << e.what() << std::endl;
