@@ -16,6 +16,8 @@ class Logger
         Logger(string _logFileName, LogType _logType);
         ~Logger();
 
+        Logger & log(std::ostream & stream);
+
         template<class T>
         friend Logger & operator<<(Logger & logger, const T & data);
         friend Logger & operator<<(Logger & logger, std::ostream& (*pf)(std::ostream&));
@@ -25,6 +27,7 @@ class Logger
 
     private:
         std::ofstream logFile;
+        std::ostream outputStream;
 };
 
 template<class T>
@@ -38,10 +41,10 @@ Logger & operator << (Logger & logger, const T & data)
                 throw std::runtime_error("Logging is set to both, but the log file is not open");
             }
             logger.logFile << data;
-            std::cout << data;
+            logger.outputStream << data;
             break;
         case LOG_MONITOR:
-            std::cout << data;
+            logger.outputStream << data;
             break;
         case LOGFILE:
             if(!logger.logFile)

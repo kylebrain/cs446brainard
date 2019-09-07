@@ -2,12 +2,14 @@
 
 Logger::Logger() :
     logType(BOTH),
-    logFileName("")
+    logFileName(""),
+    outputStream(std::cout.rdbuf())
     {}
 
 Logger::Logger(string _logFileName, LogType _logType):
     logType(_logType),
-    logFileName(_logFileName)
+    logFileName(_logFileName),
+    outputStream(std::cout.rdbuf())
 {
     if(logType == BOTH || logType == LOGFILE)
     {
@@ -23,6 +25,12 @@ Logger::~Logger()
     }
 }
 
+Logger & Logger::log(std::ostream & stream)
+{
+    outputStream.rdbuf(stream.rdbuf());
+    return *this;
+}
+
 Logger & operator << (Logger & logger, std::ostream& (*pf)(std::ostream&))
 {
     switch(logger.logType)
@@ -33,10 +41,10 @@ Logger & operator << (Logger & logger, std::ostream& (*pf)(std::ostream&))
                 throw std::runtime_error("Logging is set to both, but the log file is not open");
             }
             logger.logFile << pf;
-            std::cout << pf;
+            logger.outputStream << pf;
             break;
         case LOG_MONITOR:
-            std::cout << pf;
+            logger.outputStream << pf;
             break;
         case LOGFILE:
             if(!logger.logFile)

@@ -18,16 +18,17 @@ int main(int argc, char * argv[])
     {
         std::cout << "Creating ConfigFile..." << std::endl;
         ConfigFile configFile(argv[1]);
+        std::cout << "Creating Logger..." << std::endl;
         Logger logger(configFile.logFilePath, configFile.logType);
 
         try
         {
-            logger << "Creating Metadata..." << std::endl;
+            logger.log(std::cout) << "Creating Metadata..." << std::endl;
             MetaData metaData(configFile.filePath);
         } catch (const std::exception & e)
         {
-            logger << e.what() << std::endl;
-            logger << "Simulation failed" << std::endl;
+            logger.log(std::cerr) << e.what() << std::endl;
+            logger.log(std::cerr) << "Simulation failed" << std::endl;
             return -1;
         }
         
