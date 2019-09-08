@@ -2,14 +2,12 @@
 
 Logger::Logger() :
     logType(BOTH),
-    logFileName(""),
-    outputStream(std::cout.rdbuf())
+    logFileName("")
     {}
 
 Logger::Logger(string _logFileName, LogType _logType):
     logType(_logType),
-    logFileName(_logFileName),
-    outputStream(std::cout.rdbuf())
+    logFileName(_logFileName)
 {
     if(logType == BOTH || logType == LOGFILE)
     {
@@ -25,37 +23,46 @@ Logger::~Logger()
     }
 }
 
-Logger & Logger::log(std::ostream & stream)
+StreamLogger Logger::log(std::ostream & stream)
 {
-    outputStream.rdbuf(stream.rdbuf());
-    return *this;
+    return StreamLogger(stream, *this);
 }
 
-Logger & operator << (Logger & logger, std::ostream& (*pf)(std::ostream&))
+StreamLogger::StreamLogger(const StreamLogger & sLogger):
+    outputStream(sLogger.outputStream),
+    logger(sLogger.logger)
+{}
+
+StreamLogger::StreamLogger(std::ostream & _outputStream, Logger & _logger):
+    outputStream(_outputStream),
+    logger(_logger)
+{}
+
+StreamLogger operator << (StreamLogger streamLogger, std::ostream& (*pf)(std::ostream&))
 {
-    switch(logger.logType)
+    switch(streamLogger.logger.logType)
     {
         case BOTH:
-            if(!logger.logFile)
+            if(!streamLogger.logger.logFile)
             {
                 throw std::runtime_error("Logging is set to both, but the log file is not open");
             }
-            logger.logFile << pf;
-            logger.outputStream << pf;
+            streamLogger.logger.logFile << pf;
+            streamLogger.outputStream << pf;
             break;
         case LOG_MONITOR:
-            logger.outputStream << pf;
+            streamLogger.outputStream << pf;
             break;
         case LOGFILE:
-            if(!logger.logFile)
+            if(!streamLogger.logger.logFile)
             {
                 throw std::runtime_error("Logging is set to log file, but the log file is not open");
             }
-            logger.logFile << pf;
+            streamLogger.logger.logFile << pf;
             break;
         default:
-            throw std::runtime_error("Logtype \"" + std::to_string(logger.logType) + "\" is not handled in the logger operator <<");
+            throw std::runtime_error("Logtype \"" + std::to_string(streamLogger.logger.logType) + "\" is not handled in the logger operator <<");
     }
 
-    return logger;
+    return streamLogger;
 }

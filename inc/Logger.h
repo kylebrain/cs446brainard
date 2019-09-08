@@ -8,6 +8,7 @@
 using std::string;
 
 enum LogType {BOTH, LOG_MONITOR, LOGFILE};
+class StreamLogger;
 
 class Logger
 {
@@ -15,49 +16,59 @@ class Logger
         Logger();
         Logger(string _logFileName, LogType _logType);
         ~Logger();
-
-        Logger & log(std::ostream & stream);
-
+        StreamLogger log(std::ostream & stream);
         template<class T>
-        friend Logger & operator<<(Logger & logger, const T & data);
-        friend Logger & operator<<(Logger & logger, std::ostream& (*pf)(std::ostream&));
+        friend StreamLogger operator<<(StreamLogger streamLogger, const T & data);
+        friend StreamLogger operator<<(StreamLogger streamLogger, std::ostream& (*pf)(std::ostream&));
 
         LogType logType;
         string logFileName;
 
     private:
         std::ofstream logFile;
-        std::ostream outputStream;
+};
+
+class StreamLogger
+{
+    public:
+        StreamLogger(const StreamLogger & sLogger);
+        StreamLogger(std::ostream & _outputStream, Logger & _logger);
+        template<class T>
+        friend StreamLogger operator<<(StreamLogger streamLogger, const T & data);
+        friend StreamLogger operator<<(StreamLogger streamLogger, std::ostream& (*pf)(std::ostream&));
+    private:
+        std::ostream & outputStream;
+        Logger & logger;
 };
 
 template<class T>
-Logger & operator << (Logger & logger, const T & data)
+StreamLogger operator << (StreamLogger streamLogger, const T & data)
 {
-    switch(logger.logType)
+    switch(streamLogger.logger.logType)
     {
         case BOTH:
-            if(!logger.logFile)
+            if(!streamLogger.logger.logFile)
             {
                 throw std::runtime_error("Logging is set to both, but the log file is not open");
             }
-            logger.logFile << data;
-            logger.outputStream << data;
+            streamLogger.logger.logFile << data;
+            streamLogger.outputStream << data;
             break;
         case LOG_MONITOR:
-            logger.outputStream << data;
+            streamLogger.outputStream << data;
             break;
         case LOGFILE:
-            if(!logger.logFile)
+            if(!streamLogger.logger.logFile)
             {
                 throw std::runtime_error("Logging is set to log file, but the log file is not open");
             }
-            logger.logFile << data;
+            streamLogger.logger.logFile << data;
             break;
         default:
-            throw std::runtime_error("Logtype \"" + std::to_string(logger.logType) + "\" is not handled in the logger operator <<");
+            throw std::runtime_error("Logtype \"" + std::to_string(streamLogger.logger.logType) + "\" is not handled in the logger operator <<");
     }
 
-    return logger;
+    return streamLogger;
 }
 
 #endif
