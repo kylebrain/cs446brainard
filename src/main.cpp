@@ -5,6 +5,7 @@
 #include "ConfigFile.h"
 #include "MetaData.h"
 #include "Logger.h"
+#include "Utils.h"
 
 int main(int argc, char * argv[])
 {
@@ -16,6 +17,7 @@ int main(int argc, char * argv[])
 
     try
     {
+        Utils::VerifyFileExtension(argv[1], CONF_FILE_EXTENSION);
         std::cout << "Creating ConfigFile..." << std::endl;
         ConfigFile configFile(argv[1]);
         std::cout << "Creating Logger..." << std::endl;
@@ -23,6 +25,7 @@ int main(int argc, char * argv[])
 
         try
         {
+            Utils::VerifyFileExtension(configFile.filePath, META_DATA_FILE_EXTENSION);
             std::cout << "Creating Metadata..." << std::endl;
             MetaData metaData(configFile.filePath);
             std::cout << "FINISHED SETUP" << std::endl;

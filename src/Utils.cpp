@@ -9,7 +9,7 @@ void Utils::RemoveHeader(string header, std::ifstream & file)
     std::getline(file, line);
     if(line != header)
     {
-        throw std::runtime_error("Config file header did not match: \"" + header + "\"");
+        throw std::runtime_error("Config file header did not match: \"" + header + "\". Recieved \"" + line + "\".");
     }
 }
 
@@ -24,4 +24,12 @@ int Utils::stoiNoSpace(string str)
     }
 
     return ret;
+}
+
+void Utils::VerifyFileExtension(string fileName, string extension)
+{
+    if(fileName.substr(fileName.find_last_of(".") + 1) != extension)
+    {
+        throw std::runtime_error("Config file extension of \"" + fileName + "\" does not have extension \"." + extension + "\"");
+    }
 }

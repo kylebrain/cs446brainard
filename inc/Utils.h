@@ -12,6 +12,7 @@ class Utils
     public:
         static void RemoveHeader(string header, std::ifstream & file);
         static int stoiNoSpace(string str);
+        static void VerifyFileExtension(string fileName, string extension);
 };
 
 #endif

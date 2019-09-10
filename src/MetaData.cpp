@@ -36,6 +36,11 @@ void MetaDataItem::validate()
     {
         throw std::runtime_error("Metadata Descriptor \"" + descriptor + "\" is not associated with code \"" + string(1, code) + "\"");
     }
+
+    if(cycle < 0)
+    {
+        throw std::runtime_error("Metadata cycle \"" + std::to_string(cycle) + "\" must be greater or equal to 0");
+    }
 }
 
 string MetaDataItem::getFormatted()
@@ -68,10 +73,6 @@ void MetaData::parseMetaData(string fileName)
 
     Utils::RemoveHeader("Start Program Meta-Data Code:", metaDataFile);
     metaDataItems = tokenizeMetaData(metaDataFile);
-    for(int i = 0; i < metaDataItems.size(); i++)
-    {
-        metaDataItems[i].validate();
-    }
     Utils::RemoveHeader("End Program Meta-Data Code.", metaDataFile);
     metaDataFile.close();
 }
@@ -86,65 +87,72 @@ std::vector<MetaDataItem> MetaData::tokenizeMetaData(std::ifstream & file)
 
     try
     {
-    while(!finished)
-    {
-        char currentChar;
-        file.get(currentChar);
-        switch (state)
+        while(!finished)
         {
-            case CODE:
-                currentItem = new MetaDataItem();
-                cycleString = "";
-                currentItem->code = currentChar;
-                file.get(currentChar);
-                if(currentChar != '{')
-                {
-                    throw std::runtime_error("Metadata code \"" + string(1, currentItem->code) + "\" not followed by a {");
-                }
-                state = DESCRIPTOR;
-                break;
-            case DESCRIPTOR:
-                if(currentChar == '}')
-                {
-                    state = CYCLE;
-                    break;
-                }
+            char currentChar;
+            if(state == DESCRIPTOR)
+            {
+                // "hard drive" must be formatted with a space
+                file >> std::noskipws >> currentChar;
+            } else
+            {
+                file >> std::skipws >> currentChar;
+            }
 
-                currentItem->descriptor += currentChar;
-                break;
-            case CYCLE:
-                if(currentChar == ';')
-                {
-                    file.get(currentChar);
-                    if (currentChar != ' ' && currentChar != '\n')
+            switch (state)
+            {
+                case CODE:
+                    currentItem = new MetaDataItem();
+                    cycleString = "";
+                    currentItem->code = currentChar;
+                    file >> std::skipws >> currentChar;
+                    if(currentChar != '{')
                     {
-                        throw std::runtime_error("Metadata file \";\" is not followed by a space or endline");
+                        throw std::runtime_error("Metadata code \"" + string(1, currentItem->code) + "\" not followed by a {");
                     }
-                    currentItem->cycle = getCycleFromString(cycleString);
-                    retMetaDataItems.push_back(*currentItem);
-                    delete currentItem;
-                    state = CODE;
+                    state = DESCRIPTOR;
                     break;
-                }
-                if(currentChar == '.')
-                {
-                    file.get(currentChar);
-                    if (currentChar != '\n')
+                case DESCRIPTOR:
+                    if(currentChar == '}')
                     {
-                        throw std::runtime_error("Metadata file \".\" is not followed by an endline");
+                        state = CYCLE;
+                        break;
                     }
-                    currentItem->cycle = getCycleFromString(cycleString);
-                    retMetaDataItems.push_back(*currentItem);
-                    delete currentItem;
-                    finished = true;
+
+                    currentItem->descriptor += currentChar;
                     break;
-                }
-                cycleString += currentChar;
-                break;
-            default:
-                throw std::runtime_error("Metadata scanner state \"" + std::to_string(state) + "\" is not handled in MetaData tokenizeMetaData");
+                case CYCLE:
+                    if(currentChar == ';' || currentChar == '.')
+                    {
+                        if(cycleString == "")
+                        {
+                            throw std::runtime_error("No metadata cycle was provided");
+                        }
+                        currentItem->cycle = getCycleFromString(cycleString);
+                        retMetaDataItems.push_back(*currentItem);
+                        delete currentItem;
+
+                        if(currentChar == ';')
+                        {
+                            // Check for the next code
+                            state = CODE;
+                        } else
+                        {
+                            // "." found and metadata is over
+                            finished = true;
+                        }
+                        break;
+                    }
+                    cycleString += currentChar;
+                    break;
+                default:
+                    throw std::runtime_error("Metadata scanner state \"" + std::to_string(state) + "\" is not handled in MetaData tokenizeMetaData");
+            }
+
         }
-    }
+        // Remove the final \n
+        char end_line;
+        file.get(end_line);
     } catch(std::exception & e)
     {
         if(currentItem != NULL)
@@ -190,6 +198,7 @@ void MetaData::printCycleTimes(ConfigFile & configFile, Logger & logger)
     {
         if(metaDataItems[i].cycle > 0)
         {
+            metaDataItems[i].validate();
             int cycleSpeed = cycleMap.at(metaDataItems[i].descriptor);
             logger.log(std::cout) << metaDataItems[i].getFormatted() << " - " << metaDataItems[i].cycle * cycleSpeed << " ms" << std::endl;
         }

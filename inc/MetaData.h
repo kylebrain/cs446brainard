@@ -8,6 +8,8 @@
 
 using std::string;
 
+const string META_DATA_FILE_EXTENSION = "mdf";
+
 const char OPERATING_SYSTEM = 'S';
 const char PROGRAM_APPLICATION = 'A';
 const char PROCESS = 'P';

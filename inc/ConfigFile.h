@@ -11,12 +11,14 @@
 
 using std::string;
 
+const string CONF_FILE_EXTENSION = "conf";
+
 const string LOG_TYPE_HEADER = "Log to ";
 const std::map<string, LogType> LOG_TYPE_STRING_MAP =
 {
     {LOG_TYPE_HEADER + "Both", BOTH},
     {LOG_TYPE_HEADER + "Monitor", LOG_MONITOR},
-    {LOG_TYPE_HEADER + "Log file", LOGFILE}
+    {LOG_TYPE_HEADER + "File", LOGFILE}
 };
 
 class ConfigFile
