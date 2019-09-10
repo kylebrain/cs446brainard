@@ -26,6 +26,9 @@ const string PRINTER = "printer";
 const string BLOCK = "block";
 const string ALLOCATE = "allocate";
 
+class ConfigFile;
+class Logger;
+
 const std::map<char, std::vector<string>> META_DATA_MAP =
 {
     {
@@ -98,6 +101,8 @@ class MetaData
         MetaData();
         MetaData(string fileName);
         std::vector<MetaDataItem> metaDataItems;
+
+        void printCycleTimes(ConfigFile & configFile, Logger & logger);
 
     private:
         void parseMetaData(string fileName);

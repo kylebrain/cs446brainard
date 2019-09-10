@@ -23,8 +23,13 @@ int main(int argc, char * argv[])
 
         try
         {
-            logger.log(std::cout) << "Creating Metadata..." << std::endl;
+            std::cout << "Creating Metadata..." << std::endl;
             MetaData metaData(configFile.filePath);
+            std::cout << "FINISHED SETUP" << std::endl;
+            std::cout << "--------------" << std::endl << std::endl;
+            logger.log(std::cout) << configFile << std::endl;
+            logger.log(std::cout) << std::endl;
+            metaData.printCycleTimes(configFile, logger);
         } catch (const std::exception & e)
         {
             logger.log(std::cerr) << e.what() << std::endl;

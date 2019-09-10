@@ -1,9 +1,11 @@
 #include "MetaData.h"
 #include "Utils.h"
+#include "ConfigFile.h"
 
 #include <iostream>
 #include <algorithm>
 #include <exception>
+#include <map>
 
 MetaDataItem::MetaDataItem():
     code('0'),
@@ -166,4 +168,30 @@ int MetaData::getCycleFromString(string cycleString)
         throw std::runtime_error("Metadata cycle string \"" + cycleString + "\" could not be converted to an int");
     }
     return cycle;
+}
+
+void MetaData::printCycleTimes(ConfigFile & configFile, Logger & logger)
+{
+    
+    const std::map<string, int> cycleMap
+    {
+        {MONITOR, configFile.monitorDisplayTime},
+        {RUN, configFile.processorCycleTime},
+        {MOUSE, configFile.mouseCycleTime},
+        {HARD_DRIVE, configFile.hardDriveCycleTime},
+        {KEYBOARD, configFile.keyBoardCycleTime},
+        {PRINTER, configFile.printerCycleTime},
+        {ALLOCATE, configFile.memoryCycleTime},
+        {BLOCK, configFile.memoryCycleTime}
+    };
+
+    logger.log(std::cout) << "Meta-Data Metrics" << std::endl;
+    for(size_t i = 0; i < metaDataItems.size(); i++)
+    {
+        if(metaDataItems[i].cycle > 0)
+        {
+            int cycleSpeed = cycleMap.at(metaDataItems[i].descriptor);
+            logger.log(std::cout) << metaDataItems[i].getFormatted() << " - " << metaDataItems[i].cycle * cycleSpeed << " ms" << std::endl;
+        }
+    }
 }

@@ -11,6 +11,9 @@ ConfigFile::ConfigFile() :
     monitorDisplayTime(0),
     scannerCycleTime(0),
     hardDriveCycleTime(0),
+    mouseCycleTime(0),
+    printerCycleTime(0),
+    memoryCycleTime(0),
     logType(BOTH),
     logFilePath("")
     {}
@@ -31,12 +34,21 @@ void ConfigFile::parseConfileFile(string fileName)
     Utils::RemoveHeader("Start Simulator Configuration File", configFile);
     version = GetConfigAttribute("Version/Phase", configFile);
     filePath = GetConfigAttribute("File Path", configFile);
-    projectorCycleTime = std::stoi(GetConfigAttribute("Projector cycle time {msec}", configFile));
-    processorCycleTime = std::stoi(GetConfigAttribute("Processor cycle time {msec}", configFile));
-    keyBoardCycleTime = std::stoi(GetConfigAttribute("Keyboard cycle time {msec}", configFile));
     monitorDisplayTime = std::stoi(GetConfigAttribute("Monitor display time {msec}", configFile));
-    scannerCycleTime = std::stoi(GetConfigAttribute("Scanner cycle time {msec}", configFile));
+    processorCycleTime = std::stoi(GetConfigAttribute("Processor cycle time {msec}", configFile));
+    // mouse
+    mouseCycleTime = std::stoi(GetConfigAttribute("Mouse cycle time {msec}", configFile));
     hardDriveCycleTime = std::stoi(GetConfigAttribute("Hard drive cycle time {msec}", configFile));
+    keyBoardCycleTime = std::stoi(GetConfigAttribute("Keyboard cycle time {msec}", configFile));
+    
+    // memory
+    memoryCycleTime = std::stoi(GetConfigAttribute("Memory cycle time {msec}", configFile));
+    // printer
+    printerCycleTime = std::stoi(GetConfigAttribute("Printer cycle time {msec}", configFile));
+
+    //projectorCycleTime = std::stoi(GetConfigAttribute("Projector cycle time {msec}", configFile));
+    //scannerCycleTime = std::stoi(GetConfigAttribute("Scanner cycle time {msec}", configFile));
+
     logType = GetLogTypeFromString(GetConfigAttribute("Log", configFile));
     logFilePath = GetConfigAttribute("Log File Path", configFile);
     Utils::RemoveHeader("End Simulator Configuration File", configFile);
@@ -81,15 +93,18 @@ LogType ConfigFile::GetLogTypeFromString(string logTypeStr)
 
 std::ostream & operator << (std::ostream &out, const ConfigFile &c)
 {
-    out << "Version: " << c.version << std::endl;
-    out << "File Path: " << c.filePath << std::endl;
-    out << "Projector: " << c.projectorCycleTime << std::endl;
-    out << "Processor: " << c.processorCycleTime << std::endl;
-    out << "Keyboard: " << c.keyBoardCycleTime << std::endl;
-    out << "Monitor: " << c.monitorDisplayTime << std::endl;
-    out << "Scanner: " << c.scannerCycleTime << std::endl;
-    out << "Hard drive: " << c.hardDriveCycleTime << std::endl;
-    out << "Log: " << c.logType << std::endl;
+    out << "Configuration File Data" << std::endl;
+    //out << "Version: " << c.version << std::endl;
+    //out << "File Path: " << c.filePath << std::endl;
+
+    out << "Monitor = " << c.monitorDisplayTime << " ms/cycle" << std::endl;
+    out << "Processor = " << c.processorCycleTime << " ms/cycle" << std::endl;
+    out << "Mouse = " << c.mouseCycleTime << " ms/cycle" << std::endl;
+    out << "Hard drive = " << c.hardDriveCycleTime << " ms/cycle" << std::endl;
+    out << "Keyboard = " << c.keyBoardCycleTime << " ms/cycle" << std::endl;
+    out << "Memory = " << c.memoryCycleTime << " ms/cycle" << std::endl;
+    out << "Printer = " << c.printerCycleTime << " ms/cycle" << std::endl;
+    out << "Log = " << c.logType << std::endl;
     out << "Log File Path: " << c.logFilePath;
     return out;
 }

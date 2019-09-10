@@ -33,6 +33,9 @@ class ConfigFile
         int monitorDisplayTime;
         int scannerCycleTime;
         int hardDriveCycleTime;
+        int mouseCycleTime;
+        int printerCycleTime;
+        int memoryCycleTime;
         LogType logType;
         string logFilePath;
 
