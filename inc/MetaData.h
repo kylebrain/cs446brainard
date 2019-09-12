@@ -100,13 +100,20 @@ enum MetaDataParserState {CODE, DESCRIPTOR, CYCLE};
 class MetaData
 {
     public:
-        MetaData();
-        MetaData(string fileName);
+        MetaData(Logger & _logger, ConfigFile & configFile);
         std::vector<MetaDataItem> metaDataItems;
 
-        void printCycleTimes(ConfigFile & configFile, Logger & logger);
+        void printCycleTime(MetaDataItem & metaItem);
 
     private:
+        const std::map<string, int> cycleMap;
+        Logger & logger;
+        MetaDataItem * beginOperatingSystem;
+        MetaDataItem * beginApplication;
+        MetaDataItem * finishOperatingSystem;
+        MetaDataItem * finishApplication;
+
+        void checkForBeginFinish(MetaDataItem & item);
         void parseMetaData(string fileName);
         int getCycleFromString(string cycleString);
         std::vector<MetaDataItem> tokenizeMetaData(std::ifstream & file);

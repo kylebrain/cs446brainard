@@ -1,4 +1,5 @@
 #include "Logger.h"
+#include "Utils.h"
 
 Logger::Logger() :
     logType(BOTH),
@@ -45,7 +46,7 @@ StreamLogger operator << (StreamLogger streamLogger, std::ostream& (*pf)(std::os
         case BOTH:
             if(!streamLogger.logger.logFile)
             {
-                throw std::runtime_error("Logging is set to both, but the log file is not open");
+                throw SimError("Logging is set to both, but the log file is not open");
             }
             streamLogger.logger.logFile << pf;
             streamLogger.outputStream << pf;
@@ -56,12 +57,12 @@ StreamLogger operator << (StreamLogger streamLogger, std::ostream& (*pf)(std::os
         case LOGFILE:
             if(!streamLogger.logger.logFile)
             {
-                throw std::runtime_error("Logging is set to log file, but the log file is not open");
+                throw SimError("Logging is set to log file, but the log file is not open");
             }
             streamLogger.logger.logFile << pf;
             break;
         default:
-            throw std::runtime_error("Logtype \"" + std::to_string(streamLogger.logger.logType) + "\" is not handled in the logger operator <<");
+            throw SimError("Logtype \"" + std::to_string(streamLogger.logger.logType) + "\" is not handled in the logger operator <<");
     }
 
     return streamLogger;

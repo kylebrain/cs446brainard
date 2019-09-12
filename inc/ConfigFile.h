@@ -43,6 +43,7 @@ class ConfigFile
         void parseConfileFile(string fileName);
         string GetConfigAttribute(string attrHeader, std::ifstream & file);
         LogType GetLogTypeFromString(string logTypeStr);
+        string logString() const;
 
 };
 

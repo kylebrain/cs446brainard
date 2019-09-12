@@ -7,6 +7,12 @@
 
 using std::string;
 
+class SimError : public std::runtime_error
+{
+    public:
+        SimError(const string & msg) : std::runtime_error(msg) {}
+};
+
 class Utils
 {
     public:

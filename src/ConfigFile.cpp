@@ -26,7 +26,12 @@ void ConfigFile::parseConfileFile(string fileName)
     std::ifstream configFile(fileName);
     if (!configFile)
     {
-        throw std::invalid_argument("Could not open specified config file name \"" + fileName +"\"! Was it mispelled?");
+        throw SimError("Could not open specified config file name \"" + fileName +"\"! Was it mispelled?");
+    }
+
+    if(configFile.peek() == std::ifstream::traits_type::eof())
+    {
+        throw SimError("Specified metadata file \"" + fileName +"\" is empty");
     }
 
     Utils::RemoveHeader("Start Simulator Configuration File", configFile);
@@ -45,7 +50,7 @@ void ConfigFile::parseConfileFile(string fileName)
 
     if(!configFile.eof())
     {
-        throw std::runtime_error("Config file was successfully processed, but there is extra information");
+        throw SimError("Config file was successfully processed, but there is extra information");
     }
 
     configFile.close();
@@ -61,7 +66,7 @@ string ConfigFile::GetConfigAttribute(string attrHeader, std::ifstream & file)
     std::string format = attrHeader + ": %[^\n]";
     if (sscanf(line.c_str(), format.c_str(), cStringRet) != 1)
     {
-        throw std::runtime_error("Field \"" + attrHeader + "\" could not be found");
+        throw SimError("Field \"" + attrHeader + "\" could not be found");
     }
     string retValue(cStringRet);
     return retValue;
@@ -77,15 +82,28 @@ LogType ConfigFile::GetLogTypeFromString(string logTypeStr)
     }
     catch (std::exception e)
     {
-        throw std::runtime_error("Log Type string \"" + logTypeStr + "\" is invalid, does it match with the string dict?");
+        throw SimError("Log Type string \"" + logTypeStr + "\" is invalid, does it match with the string dict?");
+    }
+}
+
+string ConfigFile::logString() const
+{
+    switch(logType)
+    {
+        case BOTH:
+            return "monitor and " + logFilePath;
+        case LOG_MONITOR:
+            return "monitor";
+        case LOGFILE:
+            return logFilePath;
+        default:
+            break;
     }
 }
 
 std::ostream & operator << (std::ostream &out, const ConfigFile &c)
 {
     out << "Configuration File Data" << std::endl;
-    //out << "Version: " << c.version << std::endl;
-    //out << "File Path: " << c.filePath << std::endl;
 
     out << "Monitor = " << c.monitorDisplayTime << " ms/cycle" << std::endl;
     out << "Processor = " << c.processorCycleTime << " ms/cycle" << std::endl;
@@ -94,8 +112,7 @@ std::ostream & operator << (std::ostream &out, const ConfigFile &c)
     out << "Keyboard = " << c.keyBoardCycleTime << " ms/cycle" << std::endl;
     out << "Memory = " << c.memoryCycleTime << " ms/cycle" << std::endl;
     out << "Printer = " << c.printerCycleTime << " ms/cycle" << std::endl;
-    out << "Log = " << c.logType << std::endl;
-    out << "Log File Path: " << c.logFilePath;
+    out << "Logged to: " << c.logString();
     return out;
 }
 

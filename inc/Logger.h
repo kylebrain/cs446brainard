@@ -9,6 +9,7 @@ using std::string;
 
 enum LogType {BOTH, LOG_MONITOR, LOGFILE};
 class StreamLogger;
+class SimError;
 
 class Logger
 {
@@ -49,7 +50,7 @@ StreamLogger operator << (StreamLogger streamLogger, const T & data)
         case BOTH:
             if(!streamLogger.logger.logFile)
             {
-                throw std::runtime_error("Logging is set to both, but the log file is not open");
+                throw SimError("Logging is set to both, but the log file is not open");
             }
             streamLogger.logger.logFile << data;
             streamLogger.outputStream << data;
@@ -60,12 +61,12 @@ StreamLogger operator << (StreamLogger streamLogger, const T & data)
         case LOGFILE:
             if(!streamLogger.logger.logFile)
             {
-                throw std::runtime_error("Logging is set to log file, but the log file is not open");
+                throw SimError("Logging is set to log file, but the log file is not open");
             }
             streamLogger.logger.logFile << data;
             break;
         default:
-            throw std::runtime_error("Logtype \"" + std::to_string(streamLogger.logger.logType) + "\" is not handled in the logger operator <<");
+            throw SimError("Logtype \"" + std::to_string(streamLogger.logger.logType) + "\" is not handled in the logger operator <<");
     }
 
     return streamLogger;
