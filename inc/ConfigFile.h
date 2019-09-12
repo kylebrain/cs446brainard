@@ -29,11 +29,9 @@ class ConfigFile
         friend std::ostream & operator << (std::ostream &out, const ConfigFile &c);
         string version;
         string filePath;
-        int projectorCycleTime;
         int processorCycleTime;
         int keyBoardCycleTime;
         int monitorDisplayTime;
-        int scannerCycleTime;
         int hardDriveCycleTime;
         int mouseCycleTime;
         int printerCycleTime;

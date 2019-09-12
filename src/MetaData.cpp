@@ -196,9 +196,9 @@ void MetaData::printCycleTimes(ConfigFile & configFile, Logger & logger)
     logger.log(std::cout) << "Meta-Data Metrics" << std::endl;
     for(size_t i = 0; i < metaDataItems.size(); i++)
     {
+        metaDataItems[i].validate();
         if(metaDataItems[i].cycle > 0)
         {
-            metaDataItems[i].validate();
             int cycleSpeed = cycleMap.at(metaDataItems[i].descriptor);
             logger.log(std::cout) << metaDataItems[i].getFormatted() << " - " << metaDataItems[i].cycle * cycleSpeed << " ms" << std::endl;
         }

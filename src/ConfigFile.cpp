@@ -5,11 +5,9 @@
 ConfigFile::ConfigFile() :
     version(""),
     filePath(""),
-    projectorCycleTime(0),
     processorCycleTime(0),
     keyBoardCycleTime(0),
     monitorDisplayTime(0),
-    scannerCycleTime(0),
     hardDriveCycleTime(0),
     mouseCycleTime(0),
     printerCycleTime(0),
@@ -36,19 +34,11 @@ void ConfigFile::parseConfileFile(string fileName)
     filePath = GetConfigAttribute("File Path", configFile);
     monitorDisplayTime = std::stoi(GetConfigAttribute("Monitor display time {msec}", configFile));
     processorCycleTime = std::stoi(GetConfigAttribute("Processor cycle time {msec}", configFile));
-    // mouse
     mouseCycleTime = std::stoi(GetConfigAttribute("Mouse cycle time {msec}", configFile));
     hardDriveCycleTime = std::stoi(GetConfigAttribute("Hard drive cycle time {msec}", configFile));
     keyBoardCycleTime = std::stoi(GetConfigAttribute("Keyboard cycle time {msec}", configFile));
-    
-    // memory
     memoryCycleTime = std::stoi(GetConfigAttribute("Memory cycle time {msec}", configFile));
-    // printer
     printerCycleTime = std::stoi(GetConfigAttribute("Printer cycle time {msec}", configFile));
-
-    //projectorCycleTime = std::stoi(GetConfigAttribute("Projector cycle time {msec}", configFile));
-    //scannerCycleTime = std::stoi(GetConfigAttribute("Scanner cycle time {msec}", configFile));
-
     logType = GetLogTypeFromString(GetConfigAttribute("Log", configFile));
     logFilePath = GetConfigAttribute("Log File Path", configFile);
     Utils::RemoveHeader("End Simulator Configuration File", configFile);
