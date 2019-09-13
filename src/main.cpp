@@ -36,6 +36,7 @@ int main(int argc, char * argv[])
         
     } catch (const SimError & e)
     {
+        // Output any errors to std::cerr before the logger is built
         std::cerr << e.what() << std::endl;
         std::cerr << "Simulation failed" << std::endl;
         return -1;

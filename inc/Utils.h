@@ -7,12 +7,14 @@
 
 using std::string;
 
+// Allows for error handling within the simulation
 class SimError : public std::runtime_error
 {
     public:
         SimError(const string & msg) : std::runtime_error(msg) {}
 };
 
+// Defines functions to be used throughout the code
 class Utils
 {
     public:

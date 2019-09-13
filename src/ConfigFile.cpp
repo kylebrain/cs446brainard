@@ -21,6 +21,7 @@ ConfigFile::ConfigFile(string fileName) : ConfigFile()
     parseConfileFile(fileName);
 }
 
+// Parses the given file and fills out the data ConfigFile fields
 void ConfigFile::parseConfileFile(string fileName)
 {
     std::ifstream configFile(fileName);
@@ -55,9 +56,9 @@ void ConfigFile::parseConfileFile(string fileName)
 
     configFile.close();
 
-
 }
 
+// Scans each line for the passed attrHeader and extracts the field's value
 string ConfigFile::GetConfigAttribute(string attrHeader, std::ifstream & file)
 {
     string line;
@@ -73,6 +74,7 @@ string ConfigFile::GetConfigAttribute(string attrHeader, std::ifstream & file)
 
 }
 
+// Looks up the formatted string to get the associated enum value
 LogType ConfigFile::GetLogTypeFromString(string logTypeStr)
 {
     LogType logType;
@@ -86,6 +88,7 @@ LogType ConfigFile::GetLogTypeFromString(string logTypeStr)
     }
 }
 
+// Returns the formatted string for the object's log type
 string ConfigFile::logString() const
 {
     switch(logType)
@@ -101,6 +104,7 @@ string ConfigFile::logString() const
     }
 }
 
+// Outputs the config file data in a readable format
 std::ostream & operator << (std::ostream &out, const ConfigFile &c)
 {
     out << "Configuration File Data" << std::endl;

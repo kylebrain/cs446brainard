@@ -11,6 +11,7 @@ enum LogType {BOTH, LOG_MONITOR, LOGFILE};
 class StreamLogger;
 class SimError;
 
+// Contains all data neccessary for logging including the log file and log type
 class Logger
 {
     public:
@@ -29,6 +30,7 @@ class Logger
         std::ofstream logFile;
 };
 
+// Handles logging using the insertion operator using the given ostream and logger file
 class StreamLogger
 {
     public:
@@ -42,6 +44,7 @@ class StreamLogger
         Logger & logger;
 };
 
+// Logs anything using the insertion operator with a StreamLogger
 template<class T>
 StreamLogger operator << (StreamLogger streamLogger, const T & data)
 {

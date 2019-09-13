@@ -24,6 +24,8 @@ Logger::~Logger()
     }
 }
 
+// Returns a StreamLogger with the passed ostream so that the user can log
+// to either std::cout or std::cerr
 StreamLogger Logger::log(std::ostream & stream)
 {
     return StreamLogger(stream, *this);
@@ -39,6 +41,7 @@ StreamLogger::StreamLogger(std::ostream & _outputStream, Logger & _logger):
     logger(_logger)
 {}
 
+// Used to handle std::endl which is not handled with the templated << override
 StreamLogger operator << (StreamLogger streamLogger, std::ostream& (*pf)(std::ostream&))
 {
     switch(streamLogger.logger.logType)

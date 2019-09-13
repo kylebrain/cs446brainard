@@ -78,6 +78,7 @@ const std::map<char, std::vector<string>> META_DATA_MAP =
     }
 };
 
+// Contains data regarding each metadata tag
 class MetaDataItem
 {
     public:
@@ -97,12 +98,13 @@ std::ostream & operator << (std::ostream &out, const MetaDataItem &mdi);
 
 enum MetaDataParserState {CODE, DESCRIPTOR, CYCLE};
 
+// Contains all relavent data related to the metadata
+// Holds a list of metadata tags
 class MetaData
 {
     public:
         MetaData(Logger & _logger, ConfigFile & configFile);
         std::vector<MetaDataItem> metaDataItems;
-
         void printCycleTime(MetaDataItem & metaItem);
 
     private:
