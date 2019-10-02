@@ -10,5 +10,5 @@ Logging is performed with the Logger class which ultilizes a StreamLogger class 
 ## Running
 ```bash
 make
-./sim.exe $config_file.conf
+./sim2 $config_file.conf
 ```
