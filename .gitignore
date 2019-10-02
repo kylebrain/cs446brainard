@@ -2,3 +2,5 @@
 obj/
 *.exe
 *.lgf
+
+sim*

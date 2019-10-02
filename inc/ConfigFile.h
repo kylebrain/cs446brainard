@@ -36,13 +36,15 @@ class ConfigFile
         int mouseCycleTime;
         int printerCycleTime;
         int memoryCycleTime;
+        int systemMemory;
         LogType logType;
         string logFilePath;
 
     private:
         void parseConfileFile(string fileName);
-        string GetConfigAttribute(string attrHeader, std::ifstream & file);
+        string GetConfigAttribute(string attrHeader, std::ifstream & file, string * units = NULL);
         LogType GetLogTypeFromString(string logTypeStr);
+        int GetKiloBytes(string value, string units);
         string logString() const;
 
 };

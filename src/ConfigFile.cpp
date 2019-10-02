@@ -12,6 +12,7 @@ ConfigFile::ConfigFile() :
     mouseCycleTime(0),
     printerCycleTime(0),
     memoryCycleTime(0),
+    systemMemory(0),
     logType(BOTH),
     logFilePath("")
     {}
@@ -45,8 +46,14 @@ void ConfigFile::parseConfileFile(string fileName)
     keyBoardCycleTime = std::stoi(GetConfigAttribute("Keyboard cycle time {msec}", configFile));
     memoryCycleTime = std::stoi(GetConfigAttribute("Memory cycle time {msec}", configFile));
     printerCycleTime = std::stoi(GetConfigAttribute("Printer cycle time {msec}", configFile));
+
+    string memoryUnits;
+    string systemMemoryString = GetConfigAttribute("System memory", configFile, &memoryUnits);
+    systemMemory = GetKiloBytes(systemMemoryString, memoryUnits);
+
     logType = GetLogTypeFromString(GetConfigAttribute("Log", configFile));
     logFilePath = GetConfigAttribute("Log File Path", configFile);
+
     Utils::RemoveHeader("End Simulator Configuration File", configFile);
 
     configFile.close();
@@ -54,15 +61,41 @@ void ConfigFile::parseConfileFile(string fileName)
 }
 
 // Scans each line for the passed attrHeader and extracts the field's value
-string ConfigFile::GetConfigAttribute(string attrHeader, std::ifstream & file)
+string ConfigFile::GetConfigAttribute(string attrHeader, std::ifstream & file, string * units)
 {
     string line;
     std::getline(file, line);
-    char cStringRet[50];
-    std::string format = attrHeader + ": %[^\n]";
-    if (sscanf(line.c_str(), format.c_str(), cStringRet) != 1)
+    char cStringRet[20];
+    char cStringUnits[20];
+    std::string format = attrHeader;
+    bool scaningUnits = units != NULL;
+    
+    if(scaningUnits)
+    {
+        format += " {%[^}]}: %[^\n]s";
+    } else
+    {
+        format += ": %[^\n]s";
+    }
+
+    int scanStatus;
+    int expectedRead = scaningUnits ? 2 : 1;
+    if(units != NULL)
+    {
+        scanStatus = sscanf(line.c_str(), format.c_str(), cStringUnits, cStringRet);
+    }
+    else
+    {
+        scanStatus = sscanf(line.c_str(), format.c_str(), cStringRet);
+    }
+    if(scanStatus != expectedRead)
     {
         throw SimError("Field \"" + attrHeader + "\" could not be found");
+    }
+
+    if(units != NULL)
+    {
+        *units = string(cStringUnits);
     }
     string retValue(cStringRet);
     return retValue;
@@ -81,6 +114,27 @@ LogType ConfigFile::GetLogTypeFromString(string logTypeStr)
     {
         throw SimError("Log Type string \"" + logTypeStr + "\" is invalid, does it match with the string dict?");
     }
+}
+
+int ConfigFile::GetKiloBytes(string value, string units)
+{
+    int bytes = std::stoi(value);
+
+    if(units == "kbytes")
+    {
+        // correct units
+    } else if(units == "Mbytes")
+    {
+        bytes <<= 10;
+    } else if(units == "Gbytes")
+    {
+        bytes <<= 20;
+    } else
+    {
+        throw SimError("Memory unit \"" + units + " not supported");
+    }
+
+    return bytes;
 }
 
 // Returns the formatted string for the object's log type
@@ -111,6 +165,7 @@ std::ostream & operator << (std::ostream &out, const ConfigFile &c)
     out << "Keyboard = " << c.keyBoardCycleTime << " ms/cycle" << std::endl;
     out << "Memory = " << c.memoryCycleTime << " ms/cycle" << std::endl;
     out << "Printer = " << c.printerCycleTime << " ms/cycle" << std::endl;
+    out << "System memory = " << c.systemMemory << " kbytes" << std::endl;
     out << "Logged to: " << c.logString();
     return out;
 }

@@ -27,6 +27,9 @@ int main(int argc, char * argv[])
         {
             Utils::VerifyFileExtension(configFile.filePath, META_DATA_FILE_EXTENSION);
             MetaData metaData(logger, configFile);
+            logger.log(std::cout) << std::endl;
+
+            
         } catch (const SimError & e)
         {
             logger.log(std::cerr) << e.what() << std::endl;
