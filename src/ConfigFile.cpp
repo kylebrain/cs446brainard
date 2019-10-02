@@ -49,11 +49,6 @@ void ConfigFile::parseConfileFile(string fileName)
     logFilePath = GetConfigAttribute("Log File Path", configFile);
     Utils::RemoveHeader("End Simulator Configuration File", configFile);
 
-    if(!configFile.eof())
-    {
-        throw SimError("Config file was successfully processed, but there is extra information");
-    }
-
     configFile.close();
 
 }
