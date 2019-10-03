@@ -1,4 +1,4 @@
-# CS446 Project 1
+# CS446 Project
 ## Description
 This project reads a config file for operation cycle times and then reads a metadata file for the performed operations. It then outputs the cycle times for each operation.
 

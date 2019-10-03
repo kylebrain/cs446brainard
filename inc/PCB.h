@@ -1,5 +1,11 @@
-# ifndef PCB_H_
+#ifndef PCB_H_
 # define PCB_H_
 
+enum ProcessState {START, READY, RUNNING, WAIT, EXIT};
+
+class PCB
+{
+    ProcessState processState;
+};
 
 #endif

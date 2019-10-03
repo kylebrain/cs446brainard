@@ -2,6 +2,8 @@
 
 #include <string>
 #include <exception>
+#include <iostream>
+#include <pthread.h>
 
 // Verifies the next line of a file matches the passed header
 void Utils::RemoveHeader(string header, std::ifstream & file)
@@ -36,4 +38,55 @@ void Utils::VerifyFileExtension(string fileName, string extension)
     {
         throw SimError("Config file extension of \"" + fileName + "\" does not have extension \"." + extension + "\"");
     }
+}
+
+void Utils::wait(int durations_ms)
+{
+    std::chrono::time_point<std::chrono::system_clock> start = std::chrono::system_clock::now();
+    float timePassed = 0;
+    do
+    {
+        timePassed = time_passed_since(start);
+    } while (timePassed < durations_ms);
+}
+
+void * Utils::wait_void(void * duration_ms)
+{
+    int * arg = (int *) duration_ms;
+    wait(*arg);
+    pthread_exit(NULL);
+}
+
+void Utils::threaded_wait(int duration_ms)
+{
+    pthread_t thread;
+    pthread_attr_t attr;
+    void * status;
+
+    pthread_attr_init(&attr);
+    pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE);
+
+    int rc = pthread_create(&thread, &attr, Utils::wait_void, (void *) &duration_ms);
+    if(rc)
+    {
+        std::cerr << "Unable to create thread, " << rc << std::endl;
+    }
+
+    pthread_attr_destroy(&attr);
+
+    rc = pthread_join(thread, &status);
+    if(rc)
+    {
+        std::cerr << "Unable to join thread, " << rc << std::endl;
+    }
+    std::cout << "Thread exited with status: " << status << std::endl;
+
+    pthread_exit(NULL);
+}
+
+float Utils::time_passed_since(std::chrono::time_point<std::chrono::system_clock> start)
+{
+    std::chrono::time_point<std::chrono::system_clock> current = std::chrono::system_clock::now();
+    std::chrono::milliseconds milliseconds = std::chrono::duration_cast<std::chrono::milliseconds>(current - start);
+    return milliseconds.count();
 }

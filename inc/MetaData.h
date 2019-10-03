@@ -106,9 +106,9 @@ class MetaData
         MetaData(Logger & _logger, ConfigFile & configFile);
         std::vector<MetaDataItem> metaDataItems;
         void printCycleTime(MetaDataItem & metaItem);
+        const std::map<string, int> cycleMap;
 
     private:
-        const std::map<string, int> cycleMap;
         Logger & logger;
         MetaDataItem * beginOperatingSystem;
         MetaDataItem * beginApplication;
