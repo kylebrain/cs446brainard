@@ -25,7 +25,8 @@ class Utils
         static void wait(int durations_ms);
         static void * wait_void(void * duration_ms);
         static void threaded_wait(int duration_ms);
-        static float time_passed_since(std::chrono::time_point<std::chrono::system_clock> start);
+        static float ms_since(std::chrono::time_point<std::chrono::system_clock> start);
+        static float s_since(std::chrono::time_point<std::chrono::system_clock> start);
 };
 
 #endif

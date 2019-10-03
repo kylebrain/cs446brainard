@@ -13,15 +13,19 @@ using std::string;
 class Process
 {
     public:
+        int pid;
         Logger & logger;
         int totalSystemMemory;
         PCB pcb;
         std::vector<Operation> operations;
+        Process(int _pid, Logger & _logger, int _totalSystemMemory, std::chrono::time_point<std::chrono::system_clock> _sim_start_time);
         void run();
 
     private:
-        string GetOutputString(Operation op);
+        std::chrono::time_point<std::chrono::system_clock> sim_start_time;
+        string GetOutputString(Operation op, bool start);
         void PerformOperation(Operation op);
+        string RandomHexMemoryLocation();
 };
 
 #endif

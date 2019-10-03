@@ -5,7 +5,8 @@ enum ProcessState {START, READY, RUNNING, WAIT, EXIT};
 
 class PCB
 {
-    ProcessState processState;
+    public:
+        ProcessState processState;
 };
 
 #endif

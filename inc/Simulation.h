@@ -2,6 +2,7 @@
 #define SIMULATION_H_
 
 #include <vector>
+#include <chrono>
 
 #include "ConfigFile.h"
 #include "MetaData.h"
@@ -19,9 +20,13 @@ class Simulation
 
         std::vector<Process> processes;
 
-        Simulation(ConfigFile _configFile, MetaData _metaData, Logger _logger);
+        Simulation(ConfigFile & _configFile, MetaData & _metaData, Logger & _logger);
         void run();
+
+    private:
         void createProcesses();
+        int current_pid;
+        std::chrono::time_point<std::chrono::system_clock> start_time;
 };
 
 

@@ -46,7 +46,7 @@ void Utils::wait(int durations_ms)
     float timePassed = 0;
     do
     {
-        timePassed = time_passed_since(start);
+        timePassed = ms_since(start);
     } while (timePassed < durations_ms);
 }
 
@@ -79,14 +79,18 @@ void Utils::threaded_wait(int duration_ms)
     {
         std::cerr << "Unable to join thread, " << rc << std::endl;
     }
-    std::cout << "Thread exited with status: " << status << std::endl;
-
-    pthread_exit(NULL);
 }
 
-float Utils::time_passed_since(std::chrono::time_point<std::chrono::system_clock> start)
+float Utils::ms_since(std::chrono::time_point<std::chrono::system_clock> start)
 {
     std::chrono::time_point<std::chrono::system_clock> current = std::chrono::system_clock::now();
     std::chrono::milliseconds milliseconds = std::chrono::duration_cast<std::chrono::milliseconds>(current - start);
     return milliseconds.count();
+}
+
+float Utils::s_since(std::chrono::time_point<std::chrono::system_clock> start)
+{
+    std::chrono::time_point<std::chrono::system_clock> current = std::chrono::system_clock::now();
+    std::chrono::duration<float> seconds = current - start;
+    return seconds.count();
 }

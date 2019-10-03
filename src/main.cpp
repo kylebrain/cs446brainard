@@ -6,6 +6,7 @@
 #include "MetaData.h"
 #include "Logger.h"
 #include "Utils.h"
+#include "Simulation.h"
 
 int main(int argc, char * argv[])
 {
@@ -29,6 +30,8 @@ int main(int argc, char * argv[])
             MetaData metaData(logger, configFile);
             logger.log(std::cout) << std::endl;
 
+            Simulation simulation(configFile, metaData, logger);
+            simulation.run();
             
         } catch (const SimError & e)
         {
