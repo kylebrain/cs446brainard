@@ -105,15 +105,16 @@ string ConfigFile::GetConfigAttribute(string attrHeader, std::ifstream & file, s
 // Looks up the formatted string to get the associated enum value
 LogType ConfigFile::GetLogTypeFromString(string logTypeStr)
 {
-    LogType logType;
+    LogType retLogType;
     try
     {
-        logType =  LOG_TYPE_STRING_MAP.at(logTypeStr);
+        retLogType =  LOG_TYPE_STRING_MAP.at(logTypeStr);
     }
     catch (std::exception e)
     {
         throw SimError("Log Type string \"" + logTypeStr + "\" is invalid, does it match with the string dict?");
     }
+    return retLogType;
 }
 
 int ConfigFile::GetKiloBytes(string value, string units)
@@ -149,7 +150,7 @@ string ConfigFile::logString() const
         case LOGFILE:
             return logFilePath;
         default:
-            break;
+            return "";
     }
 }
 
