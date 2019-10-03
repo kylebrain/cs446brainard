@@ -6,7 +6,7 @@ make
 ./sim2 $config_file.conf
 ```
 
-## Project 2
+# Project 2
 ## Description
 The simulator runs the operations as defined in the metadata file for the cycle length specified by the config file. A timer is create and ran for each operation.
 For I/O operations the timer is run in a seperate thread. A PCB keeps track of the process's status.
