@@ -7,6 +7,10 @@ make
 ```
 
 # Project 2
+## Relevant Code Locations
+PCB: defined in PCB.h declared in Process.h line 19 and implemented in Process.cpp
+Threads: implemented in Utils.cpp line 60
+
 ## Description
 The simulator runs the operations as defined in the metadata file for the cycle length specified by the config file. A timer is create and ran for each operation.
 For I/O operations the timer is run in a seperate thread. A PCB keeps track of the process's status.
