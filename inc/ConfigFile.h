@@ -37,8 +37,10 @@ class ConfigFile
         int printerCycleTime;
         int memoryCycleTime;
         int systemMemory;
+        int memoryBlockSize;
         LogType logType;
         string logFilePath;
+        std::map<string, int> resourceCount;
 
     private:
         void parseConfileFile(string fileName);

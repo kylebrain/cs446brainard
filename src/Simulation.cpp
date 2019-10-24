@@ -5,10 +5,12 @@ Simulation::Simulation(ConfigFile & _configFile, MetaData & _metaData, Logger & 
     configFile(_configFile),
     metaData(_metaData),
     logger(_logger),
-    current_pid(0)
+    current_pid(0),
+    currentMemoryBlock(0)
 {
     start_time = std::chrono::system_clock::now();
     createProcesses();
+    createIoLocks();
 }
 
 void Simulation::run()
@@ -42,7 +44,7 @@ void Simulation::createProcesses()
                 {
                     throw SimError("Current process in progress when A{begin} was encountered");
                 }
-                current_process = new Process(++current_pid, logger, configFile.systemMemory, start_time);
+                current_process = new Process(++current_pid, logger, *this, start_time);
             } else if(current_process != NULL)
             {
                 processes.push_back(*current_process);
@@ -59,5 +61,21 @@ void Simulation::createProcesses()
         {
             throw SimError("Encountered code \'" + string(item.code, 1) + "\' when there was no current process");
         }
+    }
+}
+
+void Simulation::createIoLocks()
+{
+    for (std::map<string, int>::iterator it = configFile.resourceCount.begin(); it != configFile.resourceCount.end(); it++ )
+    {
+        std::pair<string, sem_t> lock;
+        lock.first = it->first;
+        sem_init(&lock.second, 0, it->second);
+        ioLocks.insert(lock);
+
+        std::pair<string, int> num;
+        num.first = it->first;
+        num.second = 0;
+        resourceNum.insert(num);
     }
 }

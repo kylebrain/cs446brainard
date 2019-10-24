@@ -1,5 +1,6 @@
 #include "ConfigFile.h"
 #include "Utils.h"
+#include "MetaData.h"
 #include <string.h>
 
 ConfigFile::ConfigFile() :
@@ -14,7 +15,14 @@ ConfigFile::ConfigFile() :
     memoryCycleTime(0),
     systemMemory(0),
     logType(BOTH),
-    logFilePath("")
+    logFilePath(""),
+    resourceCount{
+        {HARD_DRIVE, 1},
+        {KEYBOARD, 1},
+        {MOUSE, 1},
+        {MONITOR, 1},
+        {PRINTER, 1}
+    }
     {}
 
 ConfigFile::ConfigFile(string fileName) : ConfigFile()
@@ -50,6 +58,11 @@ void ConfigFile::parseConfileFile(string fileName)
     string memoryUnits;
     string systemMemoryString = GetConfigAttribute("System memory", configFile, &memoryUnits);
     systemMemory = GetKiloBytes(systemMemoryString, memoryUnits);
+    string memoryBlockString = GetConfigAttribute("Memory block size", configFile, &memoryUnits);
+    memoryBlockSize = GetKiloBytes(memoryBlockString, memoryUnits);
+
+    resourceCount[PRINTER] = std::stoi(GetConfigAttribute("Printer quantity", configFile));
+    resourceCount[HARD_DRIVE] = std::stoi(GetConfigAttribute("Hard drive quantity", configFile));
 
     logType = GetLogTypeFromString(GetConfigAttribute("Log", configFile));
     logFilePath = GetConfigAttribute("Log File Path", configFile);

@@ -3,8 +3,18 @@
 ## Running
 ```bash
 make
-./sim2 $config_file.conf
+./sim3 $config_file.conf
 ```
+
+# Project 3
+## Relavant Code Locations
+Semaphores: defined in Simulation.h line 26 and used in Utils.cpp line 58 and 63
+
+## Description
+The simulator must keep track of resources and never assign the same resource to two processes
+
+## Implementation
+Semaphores are used to keep track of the resources available and wait and post are used to reserve and release resouces
 
 # Project 2
 ## Relevant Code Locations

@@ -5,6 +5,7 @@
 #include <fstream>
 #include <exception>
 #include <chrono>
+#include <semaphore.h>
 
 using std::string;
 
@@ -24,9 +25,16 @@ class Utils
         static void VerifyFileExtension(string fileName, string extension);
         static void wait(int durations_ms);
         static void * wait_void(void * duration_ms);
-        static void threaded_wait(int duration_ms);
+        static void threaded_wait(int duration_ms, sem_t * sem);
         static float ms_since(std::chrono::time_point<std::chrono::system_clock> start);
         static float s_since(std::chrono::time_point<std::chrono::system_clock> start);
+};
+
+struct io_wait
+{
+    io_wait(sem_t * _sem, int _ms) : sem(_sem), ms(_ms) {}
+    sem_t * sem;
+    int ms;
 };
 
 #endif

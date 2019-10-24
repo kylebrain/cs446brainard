@@ -50,14 +50,22 @@ void Utils::wait(int durations_ms)
     } while (timePassed < durations_ms);
 }
 
-void * Utils::wait_void(void * duration_ms)
+void * Utils::wait_void(void * args)
 {
-    int * arg = (int *) duration_ms;
-    wait(*arg);
+    struct io_wait * io = (struct io_wait *) args;
+    if(io->sem != NULL)
+    {
+        sem_wait(io->sem);
+    }
+    wait(io->ms);
+    if(io->sem != NULL)
+    {
+        sem_post(io->sem);
+    }
     pthread_exit(NULL);
 }
 
-void Utils::threaded_wait(int duration_ms)
+void Utils::threaded_wait(int duration_ms, sem_t * sem)
 {
     pthread_t thread;
     pthread_attr_t attr;
@@ -66,7 +74,9 @@ void Utils::threaded_wait(int duration_ms)
     pthread_attr_init(&attr);
     pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE);
 
-    int rc = pthread_create(&thread, &attr, Utils::wait_void, (void *) &duration_ms);
+    struct io_wait io(sem, duration_ms);
+
+    int rc = pthread_create(&thread, &attr, Utils::wait_void, (void *) &io);
     if(rc)
     {
         std::cerr << "Unable to create thread, " << rc << std::endl;

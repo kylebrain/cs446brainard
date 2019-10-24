@@ -1,16 +1,17 @@
 #include "Process.h"
 #include "MetaData.h"
 #include "Utils.h"
+#include "Simulation.h"
 
 #include <cstdlib>
 #include <ctime>
 #include <sstream>
 #include <iomanip>
 
-Process::Process(int _pid, Logger & _logger, int _totalSystemMemory, std::chrono::time_point<std::chrono::system_clock> _sim_start_time):
+Process::Process(int _pid, Logger & _logger, Simulation & _sim, std::chrono::time_point<std::chrono::system_clock> _sim_start_time):
     pid(_pid),
     logger(_logger),
-    totalSystemMemory(_totalSystemMemory),
+    sim(_sim),
     sim_start_time(_sim_start_time)
 {
     std::srand(std::time(NULL));
@@ -62,10 +63,22 @@ string Process::GetOutputString(Operation op, bool start)
             {
                 ret += " NOT HANDLED CORRECTLY!";
             }
+
+            if(op.item.descriptor == HARD_DRIVE || op.item.descriptor == PRINTER)
+            {
+                if(!start)
+                {
+                    sim.resourceNum[op.item.descriptor]++;
+                    sim.resourceNum[op.item.descriptor] %= sim.configFile.resourceCount[op.item.descriptor];
+                } else
+                {
+                    ret += " on " + ioShortnames.at(op.item.descriptor) + " " + std::to_string(sim.resourceNum[op.item.descriptor]);
+                }
+            }
         }
     } else
     {
-        ret += start ? "allocating memory" : ("memory allocated at " + RandomHexMemoryLocation());
+        ret += start ? "allocating memory" : ("memory allocated at " + HexMemoryLocation());
     }
     return ret;
 }
@@ -75,7 +88,7 @@ void Process::PerformOperation(Operation op)
     if(op.item.code == OUTPUT || op.item.code == INPUT)
     {
         pcb.processState = WAIT;
-        Utils::threaded_wait(op.cycleTime);
+        Utils::threaded_wait(op.cycleTime, &sim.ioLocks[op.item.descriptor]);
         pcb.processState = RUNNING;
     } else
     {
@@ -83,10 +96,11 @@ void Process::PerformOperation(Operation op)
     }
 }
 
-string Process::RandomHexMemoryLocation()
+string Process::HexMemoryLocation()
 {
-    int memoryAddress = std::rand() % (totalSystemMemory * 8000);
     std::stringstream stream;
-    stream << "0x" << std::setfill('0') << std::setw(8) << std::hex << memoryAddress;
+    stream << "0x" << std::setfill('0') << std::setw(8) << std::hex << sim.currentMemoryBlock;
+    sim.currentMemoryBlock += sim.configFile.memoryBlockSize;
+    sim.currentMemoryBlock %= sim.configFile.systemMemory;
     return stream.str();
 }
