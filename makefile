@@ -1,4 +1,4 @@
-EXE = sim3
+EXE = sim4
 
 SRC_DIR = src
 OBJ_DIR = obj

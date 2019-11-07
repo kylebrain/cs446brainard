@@ -3,8 +3,19 @@
 ## Running
 ```bash
 make
-./sim3 $config_file.conf
+./sim4 $config_file.conf
 ```
+
+# Project 4
+## Relavant Code Locations
+Scheduling: The priority queue is set up using different comparisons in Simulation.cpp line 70\
+The the comparisons are implements in Process.cpp line 122
+
+## Description
+The simulator runs processes in the order that the scheduling algorithm defines.
+
+## Implementation
+A priority queue is used to sort the processes based on the scheduling algorithm.
 
 # Project 3
 ## Relavant Code Locations
