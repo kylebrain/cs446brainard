@@ -10,14 +10,17 @@ Simulation::Simulation(ConfigFile & _configFile, MetaData & _metaData, Logger & 
 {
     start_time = std::chrono::system_clock::now();
     createProcesses();
+    createProcessQueue();
     createIoLocks();
 }
 
 void Simulation::run()
 {
     logger.log(std::cout) << std::to_string(Utils::s_since(start_time)) << " - Simulator program starting" << std::endl;
-    for(Process process : processes)
+    while(!waitQueue.empty())
     {
+        Process process = waitQueue.top();
+        waitQueue.pop();
         logger.log(std::cout) << std::to_string(Utils::s_since(start_time)) << " - OS: preparing process " << process.pid << std::endl;
         logger.log(std::cout) << std::to_string(Utils::s_since(start_time)) << " - OS: starting process " << process.pid << std::endl;
         process.run();
@@ -61,6 +64,29 @@ void Simulation::createProcesses()
         {
             throw SimError("Encountered code \'" + string(item.code, 1) + "\' when there was no current process");
         }
+    }
+}
+
+void Simulation::createProcessQueue()
+{
+    switch(configFile.scheduler)
+    {
+        case SCH_FIFO:
+            waitQueue = std::priority_queue<Process &, std::vector<Process>, std::function<bool(Process &, Process &)>>(Process::sortByPid);
+            break;
+        case SCH_PS:
+            waitQueue = std::priority_queue<Process &, std::vector<Process>, std::function<bool(Process &, Process &)>>(Process::sortByIOOps);
+            break;
+        case SCH_SJF:
+            waitQueue = std::priority_queue<Process &, std::vector<Process>, std::function<bool(Process &, Process &)>>(Process::sortByOps);
+            break;
+        default:
+            throw SimError("Scheduler algorithm " + std::to_string(configFile.scheduler) + " not handled in Simulation::createProcessQueue()");
+    }
+    for(Process process : processes)
+    {
+        //std::cout << "Process " << process.pid << " - IO ops: " << process.GetIOOperationCount() << ", ops: " << process.operations.size() << std::endl; 
+        waitQueue.push(process);
     }
 }
 

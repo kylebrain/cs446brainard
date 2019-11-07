@@ -104,3 +104,43 @@ string Process::HexMemoryLocation()
     sim.currentMemoryBlock %= sim.configFile.systemMemory;
     return stream.str();
 }
+
+int Process::GetIOOperationCount() const
+{
+    int count = 0;
+    for(Operation op : operations)
+    {
+        if(op.item.code == OUTPUT || op.item.code == INPUT)
+        {
+            count++;
+        }
+    }
+
+    return count;
+}
+
+bool Process::sortByPid(Process & lhs, Process & rhs)
+{
+    return lhs.pid > rhs.pid;
+}
+bool Process::sortByIOOps(Process & lhs, Process & rhs)
+{
+    return lhs.GetIOOperationCount() < rhs.GetIOOperationCount();
+}
+bool Process::sortByOps(Process & lhs, Process & rhs)
+{
+    return lhs.operations.size() > rhs.operations.size();
+}
+
+Process& Process::operator=(Process&& rhs)
+{
+    pid = rhs.pid;
+    operations = rhs.operations;
+    return *this;
+}
+
+Process::Process(const Process& other)
+: Process(other.pid, other.logger, other.sim, other.sim_start_time)
+{
+    operations = other.operations;
+}

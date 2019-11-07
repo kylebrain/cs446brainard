@@ -47,6 +47,8 @@ void ConfigFile::parseConfileFile(string fileName)
     Utils::RemoveHeader("Start Simulator Configuration File", configFile);
     version = GetConfigAttribute("Version/Phase", configFile);
     filePath = GetConfigAttribute("File Path", configFile);
+    quatumNumber = std::stoi(GetConfigAttribute("Processor Quantum Number", configFile));
+    scheduler = GetSchedulerFromString(GetConfigAttribute("CPU Scheduling Code", configFile));
     monitorDisplayTime = std::stoi(GetConfigAttribute("Monitor display time {msec}", configFile));
     processorCycleTime = std::stoi(GetConfigAttribute("Processor cycle time {msec}", configFile));
     mouseCycleTime = std::stoi(GetConfigAttribute("Mouse cycle time {msec}", configFile));
@@ -165,6 +167,20 @@ string ConfigFile::logString() const
         default:
             return "";
     }
+}
+
+Scheduler ConfigFile::GetSchedulerFromString(string schedulerStr)
+{
+    Scheduler ret;
+    try
+    {
+        ret =  SCHEDULER_STRING_MAP.at(schedulerStr);
+    }
+    catch (std::exception e)
+    {
+        throw SimError("Scheduler string \"" + schedulerStr + "\" is invalid, does it match with the string dict?");
+    }
+    return ret;
 }
 
 // Outputs the config file data in a readable format
